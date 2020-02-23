@@ -5,7 +5,7 @@ import random
 import os
 
 
-WINDOW_WIDTH = 600
+WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 800
 
 
@@ -106,3 +106,31 @@ class Bird:
 
     def get_mask(self):
         return pygame.mask.from_surface(self.image)
+
+
+def draw_window(win, bird):
+    win.blit(BACKGROUND_SPRITE, (0, 0))
+    bird.draw(win)
+    pygame.display.update()
+
+
+def main():
+    bird = Bird(200, 200)
+    win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    clock = pygame.time.Clock()
+
+    run = True
+
+    while run:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        draw_window(win, bird)
+
+    pygame.quit()
+    quit()
+
+
+main()
