@@ -225,15 +225,42 @@ def main():
     win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
+    score = 0
+
     run = True
 
     while run:
+
         clock.tick(30)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
         # bird.move()
+        
+        #### Pipe genration logic ####
+        add_pipe = False
+        remove_pipes = []
+        for pipe in pipes:
+            if pipe.collide(bird):
+                pass
+
+            if pipe.x + pipe.top_pipe.get_width() < 0:
+                remove_pipes.append(pipe)
+
+            if not pipe.passed and pipe.x < bird.x:
+                pipe.passed = True
+                add_pipe = True
+
+            pipe.move()
+        if add_pipe:
+            score += 1
+            pipes.append(Pipe(700))
+
+        for remove_pipe in remove_pipes:
+            pipes.remove(remove_pipe)
+
         base.move()
         draw_window(win, bird, pipes, base)
 
