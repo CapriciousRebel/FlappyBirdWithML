@@ -5,8 +5,12 @@ import random
 import os
 
 
+pygame.font.init()
+
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 800
+
+STAT_FONT = pygame.font.SysFont("comicsans", 50)
 
 # Loading all the sprites
 bird_sprites = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
@@ -206,7 +210,7 @@ class Base:
         win.blit(self.image, (self.x2, self.y))
 
 
-def draw_window(win, bird, pipes, base):
+def draw_window(win, bird, pipes, base, score):
     win.blit(background_sprite, (0, 0))
 
     for pipe in pipes:
@@ -214,13 +218,16 @@ def draw_window(win, bird, pipes, base):
     base.draw(win)
     bird.draw(win)
 
+    text = STAT_FONT.render("Score : " + str(score), 1, (255, 255, 255))
+    win.blit(text, (WINDOW_WIDTH - 10 - text.get_width(), 10))
+
     pygame.display.update()
 
 
 def main():
     bird = Bird(230, 350)
     base = Base(730)
-    pipes = [Pipe(700)]
+    pipes = [Pipe(600)]
 
     win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
@@ -238,7 +245,7 @@ def main():
                 run = False
 
         # bird.move()
-        
+
         #### Pipe genration logic ####
         add_pipe = False
         remove_pipes = []
@@ -256,13 +263,17 @@ def main():
             pipe.move()
         if add_pipe:
             score += 1
-            pipes.append(Pipe(700))
+            pipes.append(Pipe(600))
 
         for remove_pipe in remove_pipes:
             pipes.remove(remove_pipe)
 
+        # bottom collision
+        if bird.y + bird.image.get_height() >= 730:
+            pass
+
         base.move()
-        draw_window(win, bird, pipes, base)
+        draw_window(win, bird, pipes, base, score)
 
     pygame.quit()
     quit()
