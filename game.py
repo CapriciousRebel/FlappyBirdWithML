@@ -123,58 +123,74 @@ class Pipe:
     velocity = 5
 
     def __init__(self, x):
+
+        #### The physics variables ####
         self.x = x
         self.height = 0
         self.gap = 100
 
+        #### The Rendering variables ####
         self.top = 0            # Tracking where the top of pipe will be drawn
         self.bottom = 0         # Tracking where the bottom of pipe will be drawn
-        self.pipe_top = pygame.transform.flip(pipe_sprite, False, True)
-        self.pipe_bottom = pipe_sprite
 
+        self.top_pipe = pygame.transform.flip(pipe_sprite, False, True)
+        self.bottom_pipe = pipe_sprite
+
+        #### The logic variables ####
         self.passed = False
+
+        #### everytime a pipe is created, we must create a height for it ####
         self.set_height()
 
     def set_height(self):
+        '''set the height randomly for the pipe'''
         self.height = random.randrange(50, 450)
-        self.top = self.height - self.pipe_top.get_height()
+        self.top = self.height - self.top_pipe.get_height()
         self.bottom = self.height + self.GAP
 
     def move(self):
+        '''move the pipe behind'''
         self.x -= self.velocity
 
     def draw(self, win):
-        win.blit(self.pipe_top, (self.x, self.top))
-        win.blit(self.pipe_bottom, (self.x, self.bottom))
+        '''draw the pipe to the window'''
+        win.blit(self.top_pipe, (self.x, self.top))
+        win.blit(self.bottom_pipe, (self.x, self.bottom))
 
     def collide(self, bird):
+        '''pixel perfect collisions using masks'''
         bird_mask = bird.get_mask()
-        top_mask = pygame.mask.from_surface(self.pipe_top)
-        bottom_mask = pygame.mask.from_surface(self.pipe_bottom)
+        top_mask = pygame.mask.from_surface(self.top_pipe)
+        bottom_mask = pygame.mask.from_surface(self.bottom_pipe)
 
         top_offset = (self.x - bird.x, self.top - round(bird.y))
         bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
 
-        b_point = bird_mask.overlap(bottom_mask, bottom_offset)
-        t_point = bird_mask.overlap(top_mask, top_offset)
+        bottom_overlap = bird_mask.overlap(bottom_mask, bottom_offset)
+        top_overlap = bird_mask.overlap(top_mask, top_offset)
 
-        if t_point or b_point:
+        if top_overlap or bottom_overlap:
             return True
 
         return False
 
 
 class Base:
+    #### Physics variables ####
     velocity = 5
+
+    #### Rendering variables ####
     width = base_sprite.get_width()
     image = base_sprite
 
     def __init__(self, y):
-        self.y = y
-        self.x1 = 0
-        self.x2 = self.width
+
+        self.y = y              # The y-postion of the base
+        self.x1 = 0             # The x-postion of the first image
+        self.x2 = self.width    # The x-postion of the second image
 
     def move(self):
+        ''' move the bases to make it look like its continous'''
         self.x1 -= self.velocity
         self.x2 -= self.velocity
 
@@ -185,18 +201,27 @@ class Base:
             self.x2 = self.x1 + self.width
 
     def draw(self, win):
+        '''render the images on the screen'''
         win.blit(self.image, (self.x1, self.y))
         win.blit(self.image, (self.x2, self.y))
 
 
-def draw_window(win, bird):
+def draw_window(win, bird, pipes, base):
     win.blit(background_sprite, (0, 0))
+
+    for pipe in pipes:
+        pipe.draw(win)
+    base.draw(win)
     bird.draw(win)
+
     pygame.display.update()
 
 
 def main():
-    bird = Bird(200, 200)
+    bird = Bird(230, 350)
+    base = Base(730)
+    pipes = [Pipe(700)]
+
     win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
@@ -208,8 +233,9 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        bird.move()
-        draw_window(win, bird)
+        # bird.move()
+        base.move()
+        draw_window(win, bird, pipes, base)
 
     pygame.quit()
     quit()
