@@ -25,26 +25,33 @@ base_sprite = pygame.transform.scale2x(
 
 
 class Bird:
-    images = bird_sprites
-    max_rotation = 25
-    rotation_velocity = 20
-    animation_time = 5      # Time for which each bird is displayed.
+    images = bird_sprites           # This is the list of sprites of the bird
+    max_angular_displacement = 25   # This is the maximum outward rotation of the bird
+    # This is the angular velocity at which the bird rotates
+    angular_velocity = 20
+    # Time in seconds for which each bird is displayed.
+    animation_time = 5
 
     def __init__(self, x, y):
-        '''Initializing the attributes'''
-        self.x = x                   # x-position
-        self.y = y                   # y-position
-        self.tilt = 0                # the tilt of the bird(rotation)
-        self.tick_count = 0          # current tick of the bird
+        '''Initializing the bird's attributes'''
+
+        #### Physics variables ####
+        self.x = x                   # top-left anchor point of the bird
+        self.y = y                   # top-right anchor point of the bird
+        self.angular_displacement = 0
         self.velocity = 0            # velocity of the bird
-        self.height = self.y         # The height of the bird
+        self.height = self.y         # ~ The height of the bird
+        self.tick_count = 0          # current tick of the bird, basically time
+
+        #### Rendering Variables ####
         self.img_count = 0           # The current image id which is being shown for the bird
         self.image = self.images[0]  # The current image of the bird
 
-    def jump(self):
+    def jump(self):                 # The jump method for the bird
 
+        # Resetting the tick_count to zero everytime the jump method is called
+        self.tick_count = 0
         self.velocity = -10.5
-        self.tick_count = 0  # Resetting the tick_count to zero everytime the jump method is called
         self.height = self.y
 
     def move(self):
@@ -68,12 +75,13 @@ class Bird:
 
         # if we are moving upward or if we are above the jump height position
         if displacement < 0 or self.y < self.height + 50:
-            if self.tilt < self.max_rotation:               # rotate the bird directly to maxrotation
-                self.tilt = self.max_rotation
+            # rotate the bird directly to maxrotation
+            if self.angular_displacement < self.max_angular_displacement:
+                self.angular_displacement = self.max_angular_displacement
         # if the bird is falling down then the bird must slowly approach to a 90-degree rotation(nose-dive)
         else:
-            if self.tilt > -90:
-                self.tilt -= self.rotation_velocity
+            if self.angular_displacement > -90:
+                self.angular_displacement -= self.angular_velocity
 
     def draw(self, win):
         # This variable keeps a track of the no. of times the bird was drawn to the window
@@ -93,17 +101,19 @@ class Bird:
             self.img_count = 0
 
         # Nose dive
-        if self.tilt <= -80:
+        if self.angular_displacement <= -80:
             self.image = self.images[1]
             # setting the image count to 10 so that it looks natural after the nose dive is done
             self.img_count = self.animation_time*2
 
         # Logic to rotate the image
-        rotated_image = pygame.transform.rotate(self.image, self.tilt)
+        rotated_image = pygame.transform.rotate(
+            self.image, self.angular_displacement)
         new_rect = rotated_image.get_rect(
             center=self.image.get_rect(topleft=(self.x, self.y)).center)
         win.blit(rotated_image, new_rect.topleft)
 
+    # For pixel perfect collision
     def get_mask(self):
         return pygame.mask.from_surface(self.image)
 
@@ -198,6 +208,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
+        bird.move()
         draw_window(win, bird)
 
     pygame.quit()
