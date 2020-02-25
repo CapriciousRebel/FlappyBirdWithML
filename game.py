@@ -244,7 +244,11 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        # bird.move()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    bird.jump()
+
+        bird.move()
 
         #### Pipe genration logic ####
         add_pipe = False
