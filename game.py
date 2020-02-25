@@ -245,7 +245,7 @@ def main():
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_SPACE:
                     bird.jump()
 
         bird.move()
