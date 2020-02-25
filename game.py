@@ -210,7 +210,7 @@ class Base:
         win.blit(self.image, (self.x2, self.y))
 
 
-def draw_window(win, bird, pipes, base, score):
+def draw_window(win, bird, pipes, base, score, collideText):
     win.blit(background_sprite, (0, 0))
 
     for pipe in pipes:
@@ -220,6 +220,9 @@ def draw_window(win, bird, pipes, base, score):
 
     text = STAT_FONT.render("Score : " + str(score), 1, (255, 255, 255))
     win.blit(text, (WINDOW_WIDTH - 10 - text.get_width(), 10))
+
+    text = STAT_FONT.render("Collision : " + collideText, 1, (255, 255, 255))
+    win.blit(text, (WINDOW_WIDTH - 200 - text.get_width(), 10))
 
     pygame.display.update()
 
@@ -239,6 +242,7 @@ def main():
     while run:
 
         clock.tick(30)
+        collideText = "False"
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -255,7 +259,7 @@ def main():
         remove_pipes = []
         for pipe in pipes:
             if pipe.collide(bird):
-                pass
+                collideText = "Pipe collide"
 
             if pipe.x + pipe.top_pipe.get_width() < 0:
                 remove_pipes.append(pipe)
@@ -274,10 +278,10 @@ def main():
 
         # bottom collision
         if bird.y + bird.image.get_height() >= 730:
-            pass
+            collideText = "bottom collide!"
 
         base.move()
-        draw_window(win, bird, pipes, base, score)
+        draw_window(win, bird, pipes, base, score, collideText)
 
     pygame.quit()
     quit()
