@@ -10,6 +10,7 @@ I followed this youtube tutorial series to learn how to implement this : https:/
 
  1. clone this repository onto your system (ssh : `git clone git@github.com:CapriciousRebel/flappy-bird-python.git`, https : `git clone https://github.com/CapriciousRebel/flappy-bird-python.git`)
  2. `cd flappy-bird-python` 
- 3. `./init.sh`
+ 3. `sudo chmod 744 init.sh` : give execution permission to init.sh
+ 3. `./init.sh` : run init.sh
 
 watch the neural network learn!
