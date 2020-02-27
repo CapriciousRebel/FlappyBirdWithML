@@ -123,7 +123,7 @@ class Bird:
 
 
 class Pipe:
-    GAP = 200
+    GAP = 170
     velocity = 5
 
     def __init__(self, x):
@@ -131,7 +131,6 @@ class Pipe:
         #### The physics variables ####
         self.x = x
         self.height = 0
-        self.gap = 100
 
         #### The Rendering variables ####
         self.top = 0            # Tracking where the top of pipe will be drawn
@@ -221,7 +220,6 @@ def draw_window(win, birds, pipes, base, score, collideText):
 
     base.draw(win)
 
-    
     text = STAT_FONT.render("Score : " + str(score), 1, (255, 255, 255))
     win.blit(text, (WINDOW_WIDTH - 10 - text.get_width(), 10))
 
